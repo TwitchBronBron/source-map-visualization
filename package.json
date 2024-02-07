@@ -6,14 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --inline --hot",
-    "build": "webpack -p --progress --profile",
-    "deploy": "gh-pages -d build"
+    "build": "webpack -p --progress"
   },
   "repository": "",
   "author": "Tobias Koppers @sokra",
   "license": "MIT",
   "devDependencies": {
-    "gh-pages": "^0.8.0",
     "html-webpack-plugin": "^2.7.2",
     "webpack": "^1.12.12",
     "webpack-dev-server": "^1.14.1"
