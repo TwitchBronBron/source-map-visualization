@@ -1,4 +1,4 @@
-module.exports = function() {
+module.exports = function () {
 	this.cacheable();
 	var files = [
 		require.resolve("uglify-js/lib/utils.js"),
@@ -11,7 +11,7 @@ module.exports = function() {
 		require.resolve("uglify-js/lib/sourcemap.js"),
 		require.resolve("uglify-js/lib/mozilla-ast.js")
 	];
-	files = files.map(function(file) {
+	files = files.map(function (file) {
 		return require("fs").readFileSync(file, "utf-8");
 	}).join("\n\n");
 	var uglify = [
@@ -20,9 +20,9 @@ module.exports = function() {
 		files,
 		"module.exports = {",
 		"defaults parse Compressor SourceMap merge OutputStream".split(" ")
-		.map(function(item) {
-			return item + ":" + item;
-		}).join(","),
+			.map(function (item) {
+				return item + ":" + item;
+			}).join(","),
 		"};"
 	];
 	return uglify.join("\n");

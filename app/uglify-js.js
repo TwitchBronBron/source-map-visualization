@@ -1,20 +1,20 @@
 var UglifyJS = require("./uglify-js.loader.js!");
 
-UglifyJS.minify = function(files, options) {
+UglifyJS.minify = function (files, options) {
     options = UglifyJS.defaults(options, {
-        outSourceMap : null,
-        sourceRoot   : null,
-        warnings     : false,
-        mangle       : {},
-        output       : null,
-        compress     : {}
+        outSourceMap: null,
+        sourceRoot: null,
+        warnings: false,
+        mangle: {},
+        output: null,
+        compress: {}
     });
     if (typeof files == "string")
-        files = [ files ];
+        files = [files];
 
     // 1. parse
     var toplevel = null;
-    files.forEach(function(file){
+    files.forEach(function (file) {
         var code = file;
         toplevel = UglifyJS.parse(code, {
             filename: "?",
@@ -51,8 +51,8 @@ UglifyJS.minify = function(files, options) {
     var stream = UglifyJS.OutputStream(output);
     toplevel.print(stream);
     return {
-        code : stream + "",
-        map  : map + ""
+        code: stream + "",
+        map: map + ""
     };
 };
 
