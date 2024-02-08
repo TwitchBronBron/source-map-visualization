@@ -6,7 +6,6 @@ var generateHtml = require("./generateHtml");
 var exampleKinds = ["coffee", "simple-coffee", "typescript", "babel", "sass"];
 var SOURCE_MAPPING_URL_REG_EXP = /\/\/[@#]\s*sourceMappingURL\s*=\s*data:[^\n]*?base64,([^\n]*)/;
 var SOURCE_MAPPING_URL_REG_EXP2 = /\/\*\s*[@#]\s*sourceMappingURL\s*=\s*data:[^\n]*?base64,([^\n]*)\s*\*\//;
-
 $(function () {
 	require("bootstrap");
 	require("./app.less");
@@ -163,6 +162,7 @@ $(function () {
 		}
 	});
 	$(window).hashchange();
+	var allFiles = [];
 
 	$(window).on("dragenter dragover", function (e) {
 		e.stopPropagation();
@@ -170,6 +170,8 @@ $(function () {
 
 		var m = $(".custom-modal").data("modal");
 		if (m && m.isShown) return;
+		//if there was no modal, this is a new drag-n-drop session. clear out the files list
+		allFiles = [];
 		$(".custom-modal .modal-body").html(require("./custom-drag.jade")());
 		$(".custom-modal").modal({
 			show: true
@@ -182,6 +184,7 @@ $(function () {
 		e.preventDefault();
 
 		var files = e.originalEvent.dataTransfer.files;
+
 		var count = files.length;
 		if (count === 0) return false;
 		var filesData = Array.prototype.map.call(files, function (file) { return { file: file, name: file.name }; });
@@ -202,16 +205,27 @@ $(function () {
 					}).join("\n");
 					throw new Error(errorText);
 				}
+
+				allFiles.push(...filesData);
+				filesData = [...allFiles];
+
+				var $filesList = $(".custom-modal .modal-body .files .list");
+				if ($filesList.length === 0) {
+					$(".custom-modal .modal-body").append('<div class="files"><b>Files:</b><ul class="list"></ul></div>');
+					$filesList = $(".custom-modal .modal-body .files .list");
+				}
+
+				$filesList.html(allFiles.map(x => `<li>${x.name}</li>`).join(''));
 				var sourceMapFile, generatedFile;
-				var javascriptWithSourceMap = filesData.filter(function (data) {
-					return (/\.js$/.test(data.name) && SOURCE_MAPPING_URL_REG_EXP.test(data.result)) ||
-						(/\.(css|js)$/.test(data.name) && SOURCE_MAPPING_URL_REG_EXP2.test(data.result));
+				//find inline sourcemap
+				var generatedFileWithSourceMap = filesData.filter(function (data) {
+					return SOURCE_MAPPING_URL_REG_EXP.test(data.result) || SOURCE_MAPPING_URL_REG_EXP2.test(data.result);
 				})[0];
-				if (javascriptWithSourceMap) {
+				if (generatedFileWithSourceMap) {
 					if (typeof atob !== "function")
 						throw new Error("Your browser doesn't support atob. Cannot decode base64.");
 					// Extract SourceMap from base64 DataUrl
-					generatedFile = javascriptWithSourceMap;
+					generatedFile = generatedFileWithSourceMap;
 					filesData.splice(filesData.indexOf(generatedFile), 1);
 					var generatedSource = generatedFile.result;
 					var match = SOURCE_MAPPING_URL_REG_EXP.exec(generatedSource) || SOURCE_MAPPING_URL_REG_EXP2.exec(generatedSource);
@@ -243,11 +257,14 @@ $(function () {
 					}
 					sourceMapFile.json = JSON.parse(sourceMapFile.result);
 
-					// get name from SourceMap
-					var name = sourceMapFile.json.file;
+					// get the source names from SourceMap
+					var names = [sourceMapFile.json.file, ...(sourceMapFile.json.sources || [])]
+						.filter(x => !!x)
+						.map(x => x.split(/[\/\\]+/).pop().toLowerCase());
+
 					generatedFile = filesData.filter(function (data) {
 						// The file with the exact name
-						return data.name === name;
+						return names.includes(data.name.toLowerCase());
 					})[0] || filesData.filter(function (data) {
 						// The first js file
 						return /\.js$/.test(data.name);

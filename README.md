@@ -2,20 +2,16 @@
 
 http://twitchbronbron.github.io/source-map-visualization/
 
-Forked from https://github.com/sokra/source-map-visualization/ because it hasn't been updated in 3 years, and I needed to make some fixes.
+## Changes from https://github.com/sokra/source-map-visualization/
+ - better drag and drop support. Previously you had to drag and drop all 3 files together (and they had to be .js style files). Now you can drag and drop any files in any order, and once we find enough files, THAT's when we trigger the visualization.
+ - support 100,000 lines of code instead of 5,000.
+ - allow sourceContent to be an empty string
 
 ## Contribute
 
 Development:
 
-``` text
+```bash
 npm install
 npm start
-```
-
-Publish:
-
-``` text
-npm run build
-npm run deploy
 ```
