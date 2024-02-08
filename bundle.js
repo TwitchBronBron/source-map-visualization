@@ -303,14 +303,12 @@
 						}
 						sourceMapFile.json = JSON.parse(sourceMapFile.result);
 	
-						// get the source names from SourceMap
-						var names = [sourceMapFile.json.file, ...(sourceMapFile.json.sources || [])]
-							.filter(x => !!x)
-							.map(x => x.split(/[\/\\]+/).pop().toLowerCase());
+						//get name from SourceMap (or generate a name by removing .map from the sourcemap if possible)
+						var name = sourceMapFile.json.file || sourceMapFile.name.replace(/\.map$/, '');
 	
 						generatedFile = filesData.filter(function (data) {
 							// The file with the exact name
-							return names.includes(data.name.toLowerCase());
+							return data.name === name;
 						})[0] || filesData.filter(function (data) {
 							// The first js file
 							return /\.js$/.test(data.name);
