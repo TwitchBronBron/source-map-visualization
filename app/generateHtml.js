@@ -1,7 +1,7 @@
 var SourceMap = require("source-map");
 var escapeHTML = require("escape-html");
 var LINESTYLES = 5;
-var MAX_LINES = 5000;
+var MAX_LINES = 100000;
 
 function sanitize(text) {
 	// Escape any <>'"\ during HTML serialization
