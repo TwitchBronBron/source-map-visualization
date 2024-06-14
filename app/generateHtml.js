@@ -148,7 +148,7 @@ module.exports = function (map, generatedCode, sources) {
 			originalLine++;
 		}
 		var exampleSource = sources[mapSources.indexOf(source)];
-		if (!exampleSource === null) throw new Error("Source '" + source + "' missing");
+		if (typeof exampleSource !== 'string') throw new Error("Source '" + source + "' missing");
 		exampleLines = exampleSource.split("\n");
 		currentSource = source;
 		mappings.forEach(function (mapping, idx) {
