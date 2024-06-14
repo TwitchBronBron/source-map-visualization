@@ -113,7 +113,9 @@
 						try {
 							sourceMap = JSON.parse(decodeURIComponent(escape(atob(match[1]))));
 							return step3();
-						} catch (e) { }
+						} catch (e) {
+							console.error(e);
+						}
 					}
 					$(".custom-modal .modal-body").html(__webpack_require__(29)({
 						generatedSource: generatedSource
@@ -132,6 +134,7 @@
 								if (!_sourceMap.sources) throw new Error("SourceMap has no sources field");
 								if (!_sourceMap.mappings) throw new Error("SourceMap has no mappings field");
 							} catch (e) {
+								console.error(e);
 								$(".custom-error").removeClass("hide").text(e.message);
 								_sourceMap = false;
 							}
@@ -188,8 +191,8 @@
 						$(".custom-modal").modal("hide");
 						oldHash = window.location.hash = "custom";
 					} catch (e) {
+						console.error(e);
 						$(".custom-error").removeClass("hide").text(e.message);
-						console.error(e.stack);
 						return $(".custom-continue").attr("disabled", false);
 					}
 				}
@@ -330,6 +333,7 @@
 					$(".custom-modal").modal("hide");
 					oldHash = window.location.hash = "custom";
 				} catch (err) {
+					console.error(err);
 					return $(".custom-error").removeClass("hide").text(err.message).attr("title", err.stack);
 				}
 			}
@@ -399,6 +403,7 @@
 					oldHash = window.location.hash = "custom";
 				});
 			} catch (e) {
+				console.error(e);
 				throw e;
 			} finally {
 				visu.show();
@@ -12012,7 +12017,7 @@
 				originalLine++;
 			}
 			var exampleSource = sources[mapSources.indexOf(source)];
-			if (!exampleSource === null) throw new Error("Source '" + source + "' missing");
+			if (typeof exampleSource !== 'string') throw new Error("Source '" + source + "' missing");
 			exampleLines = exampleSource.split("\n");
 			currentSource = source;
 			mappings.forEach(function (mapping, idx) {
